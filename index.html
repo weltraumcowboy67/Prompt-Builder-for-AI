@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PromptWerk – KI Prompt Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <p class="eyebrow">PromptWerk</p>
+        <h1>Bessere KI-Prompts mit klarer Struktur</h1>
+        <p>
+          Wähle einen Prompt-Typ, fülle die wichtigsten Felder aus und erhalte sofort einen
+          sauberen Prompt mit klaren Anforderungen.
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel form-panel" aria-label="Prompt-Konfiguration">
+          <div class="step-head">
+            <span>Schritt 1</span>
+            <h2>Prompt-Typ wählen</h2>
+          </div>
+
+          <label for="promptType">Typ</label>
+          <select id="promptType" name="promptType"></select>
+
+          <div class="step-head compact">
+            <span>Schritt 2</span>
+            <h2>Details ausfüllen</h2>
+          </div>
+
+          <form id="builderForm" novalidate>
+            <div id="formFields" class="fields"></div>
+
+            <div class="actions">
+              <button type="button" id="loadExample" class="ghost">Beispiel laden</button>
+              <button type="button" id="resetForm" class="ghost">Zurücksetzen</button>
+              <button type="button" id="improvePrompt">Prompt verbessern</button>
+            </div>
+          </form>
+
+          <div class="quality" id="qualityFeedback" aria-live="polite"></div>
+        </section>
+
+        <section class="panel preview-panel" aria-label="Prompt-Vorschau">
+          <div class="preview-head">
+            <div>
+              <span>Schritt 3</span>
+              <h2>Live-Vorschau</h2>
+            </div>
+            <button type="button" id="copyPrompt">Prompt kopieren</button>
+          </div>
+
+          <textarea id="promptPreview" readonly></textarea>
+        </section>
+      </main>
+    </div>
+
+    <template id="fieldTemplate">
+      <label>
+        <span class="field-label"></span>
+        <textarea rows="3"></textarea>
+        <small class="hint"></small>
+      </label>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
