@@ -3,104 +3,162 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PromptWerk V3 - KI Prompt Builder</title>
+    <title>Prompt Builder</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap"
       rel="stylesheet"
     />
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <header class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">PromptWerk V3</p>
-          <h1>Prompts bauen wie ein richtiges Produkt</h1>
-          <p class="hero-text">
-            Tabs statt Dropdown-Wüste, Presets pro Anwendungsfall, sauberer Export und eine
-            deutlich bessere Prompt-Ausgabe für Text, Bild, Code, Lernen, Analyse und Ideen.
-          </p>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="brand-row">
+          <div class="brand-mark">PB</div>
+          <div class="brand-copy">
+            <p class="eyebrow">Prompt Builder</p>
+            <h1>Prompts bauen</h1>
+            <p class="intro-text">
+              Entspannend, Ruhig und Mysteriös.
+            </p>
+          </div>
         </div>
 
-        <div class="hero-stats">
-          <div class="stat-card">
-            <span>Aktiver Typ</span>
+        <div class="header-meta">
+          <div class="meta-inline">
+            <span class="meta-label">Aktiver Typ</span>
             <strong id="activeTypeLabel">Text schreiben</strong>
           </div>
-          <div class="stat-card">
-            <span>Vollständigkeit</span>
+          <div class="meta-inline">
+            <span class="meta-label">Vollständigkeit</span>
             <strong id="completionLabel">0%</strong>
           </div>
-          <div class="stat-card">
-            <span>Fehlende Pflichtfelder</span>
+          <div class="meta-inline">
+            <span class="meta-label">Offene Pflichtfelder</span>
             <strong id="missingLabel">0</strong>
           </div>
         </div>
       </header>
 
       <main class="workspace">
-        <section class="panel builder-panel" aria-label="Prompt Builder">
-          <div class="panel-head">
+        <section class="surface builder-surface" aria-label="Prompt Builder">
+          <div class="surface-head">
             <div>
-              <span class="panel-kicker">Builder</span>
+              <p class="section-kicker">Builder</p>
               <h2>Prompt konfigurieren</h2>
             </div>
           </div>
 
-          <div id="typeTabs" class="tabs" role="tablist" aria-label="Prompt-Typen"></div>
+          <div id="typeTabs" class="type-tabs" role="tablist" aria-label="Prompt-Typen"></div>
 
-          <div class="type-box">
+          <div class="type-summary">
             <h3 id="typeTitle">Text schreiben</h3>
             <p id="typeDescription"></p>
           </div>
 
-          <div class="preset-section">
-            <div class="section-head">
+          <section class="subsection">
+            <div class="subsection-head">
               <div>
-                <span class="mini-kicker">Presets</span>
+                <p class="section-kicker">Presets</p>
                 <h3>Schnellstart</h3>
               </div>
             </div>
-            <div id="presetGrid" class="preset-grid"></div>
-          </div>
 
-          <div class="progress-box">
-            <div class="progress-row">
-              <span>Prompt-Qualität</span>
+            <div id="presetList" class="preset-list"></div>
+          </section>
+
+          <section class="subsection">
+            <div class="subsection-head compact-head">
+              <div>
+                <p class="section-kicker">Fortschritt</p>
+                <h3>Prompt-Qualität</h3>
+              </div>
               <strong id="progressText">0%</strong>
             </div>
-            <div class="progress-track">
+
+            <div class="progress-line">
               <div id="progressFill" class="progress-fill"></div>
             </div>
-          </div>
+          </section>
 
-          <div class="chips-box">
-            <span class="mini-kicker">Schnell ergänzen</span>
-            <div class="chips">
-              <button type="button" class="chip" data-target="style" data-value="Klar, direkt und sauber strukturiert">
-                Klarer Stil
+          <section class="subsection">
+            <div class="subsection-head">
+              <div>
+                <p class="section-kicker">Schnell ergänzen</p>
+                <h3>Fixe Zusätze</h3>
+              </div>
+            </div>
+
+            <div class="quick-add-list">
+              <button
+                type="button"
+                class="quick-item"
+                data-chip-id="clear-style"
+                data-target="style"
+                data-value="Klar, direkt und sauber strukturiert"
+              >
+                <span class="quick-circle" aria-hidden="true"></span>
+                <span>Klarer Stil</span>
               </button>
-              <button type="button" class="chip" data-target="format" data-value="Markdown mit klaren Überschriften">
-                Markdown
+
+              <button
+                type="button"
+                class="quick-item"
+                data-chip-id="markdown"
+                data-target="format"
+                data-value="Markdown mit klaren Überschriften"
+              >
+                <span class="quick-circle" aria-hidden="true"></span>
+                <span>Markdown</span>
               </button>
-              <button type="button" class="chip" data-target="length" data-value="Kurz, präzise und vollständig">
-                Kurz
+
+              <button
+                type="button"
+                class="quick-item"
+                data-chip-id="short"
+                data-target="length"
+                data-value="Kurz, präzise und vollständig"
+              >
+                <span class="quick-circle" aria-hidden="true"></span>
+                <span>Kurz</span>
               </button>
-              <button type="button" class="chip" data-target="constraints" data-value="Keine Floskeln">
-                Keine Floskeln
+
+              <button
+                type="button"
+                class="quick-item"
+                data-chip-id="no-fluff"
+                data-target="constraints"
+                data-value="Keine Floskeln"
+              >
+                <span class="quick-circle" aria-hidden="true"></span>
+                <span>Keine Floskeln</span>
               </button>
-              <button type="button" class="chip" data-target="mustInclude" data-value="Praxisnahe Beispiele oder direkt nutzbare Inhalte">
-                Praxisnah
+
+              <button
+                type="button"
+                class="quick-item"
+                data-chip-id="practical"
+                data-target="mustInclude"
+                data-value="Praxisnahe Beispiele oder direkt nutzbare Inhalte"
+              >
+                <span class="quick-circle" aria-hidden="true"></span>
+                <span>Praxisnah</span>
               </button>
             </div>
-          </div>
+
+            <p class="subtle-note">
+              Bereits gewählte Zusätze bleiben aktiv und sind bis zum Zurücksetzen gesperrt.
+            </p>
+          </section>
 
           <form id="builderForm" novalidate>
             <div id="fieldGrid" class="field-grid"></div>
 
-            <div class="form-actions">
+            <div class="action-row">
               <button type="button" id="improveButton">Prompt verbessern</button>
               <button type="button" id="resetButton" class="ghost">Zurücksetzen</button>
             </div>
@@ -109,10 +167,10 @@
           <div id="qualityBox" class="quality-box" aria-live="polite"></div>
         </section>
 
-        <section class="panel output-panel" aria-label="Prompt Ausgabe">
-          <div class="panel-head output-head">
+        <section class="surface output-surface" aria-label="Prompt Ausgabe">
+          <div class="surface-head output-head">
             <div>
-              <span class="panel-kicker">Output</span>
+              <p class="section-kicker">Output</p>
               <h2>Fertiger Prompt</h2>
             </div>
 
@@ -124,23 +182,14 @@
           </div>
 
           <div class="output-stats">
-            <div class="output-stat">
-              <span>Wörter</span>
-              <strong id="wordCount">0</strong>
-            </div>
-            <div class="output-stat">
-              <span>Zeichen</span>
-              <strong id="charCount">0</strong>
-            </div>
-            <div class="output-stat">
-              <span>Zeilen</span>
-              <strong id="lineCount">0</strong>
-            </div>
+            <span><strong id="wordCount">0</strong> Wörter</span>
+            <span><strong id="charCount">0</strong> Zeichen</span>
+            <span><strong id="lineCount">0</strong> Zeilen</span>
           </div>
 
           <textarea id="promptOutput" readonly spellcheck="false"></textarea>
 
-          <div class="output-actions">
+          <div class="action-row output-actions">
             <button type="button" id="copyButton">Kopieren</button>
             <button type="button" class="ghost export-button" data-export="txt">Export TXT</button>
             <button type="button" class="ghost export-button" data-export="md">Export MD</button>
@@ -151,7 +200,7 @@
         </section>
       </main>
     </div>
-  </body>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>

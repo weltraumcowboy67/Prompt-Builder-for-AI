@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'promptwerk-v3-state';
+const STORAGE_KEY = 'promptwerk-v4-state';
 
 const commonFields = [
   {
@@ -142,7 +142,7 @@ const typeConfig = {
           context: 'Die Seite soll erklären, warum strukturierte Prompts bessere Ergebnisse liefern.',
           style: 'Direkt, modern, verständlich',
           format: 'Hero Headline, Subheadline, 3 Nutzenpunkte, CTA',
-          length: 'Kurz und punchy',
+          length: 'Kurz und klar',
           mustInclude: 'Klarer Nutzen, einfache Sprache, sofortige Verständlichkeit',
           constraints: 'Keine Buzzwords ohne Inhalt',
           textType: 'Landingpage-Text',
@@ -172,7 +172,7 @@ const typeConfig = {
 
       return {
         role: this.role,
-        task: `Schreibe ${withArticle(data.textType, 'einen Text')} zum Thema "${data.topic}".`,
+        task: `Schreibe einen Text zum Thema "${data.topic}".`,
         context,
         requirements,
         output: [
@@ -255,7 +255,7 @@ const typeConfig = {
           mustInclude: 'Tiefenwirkung, hochwertiges Licht, starke Farbführung',
           constraints: 'Keine billige Stockfoto-Wirkung',
           motif: 'Eine Person in futuristischer Streetwear auf einem Dach',
-          scene: 'Neon-Stadt bei Nacht, Reklamen, Tiefe, Skyline im Hintergrund',
+          scene: 'Neon-Stadt bei Nacht, Reklamen, Skyline im Hintergrund',
           visualStyle: 'Cinematic, halb-realistisch, hochwertiger Concept-Art-Look',
           composition: 'Leichte Untersicht, Person im Vordergrund, Stadt in der Tiefe',
           lighting: 'Kaltes Neonlicht mit warmen Lichtakzenten',
@@ -369,7 +369,7 @@ const typeConfig = {
       {
         key: 'codeRules',
         label: 'Code-Regeln',
-        hint: 'Zum Beispiel kein Framework, sauber kommentiert, modular, responsive ...',
+        hint: 'Kein Framework, sauber kommentiert, modular, responsive ...',
         required: false,
         kind: 'textarea',
         full: true,
@@ -810,13 +810,14 @@ const typeConfig = {
 const appState = {
   type: 'text',
   mode: 'productive',
-  fields: {}
+  fields: {},
+  selectedQuickAdds: []
 };
 
 const tabsEl = document.querySelector('#typeTabs');
 const typeTitleEl = document.querySelector('#typeTitle');
 const typeDescriptionEl = document.querySelector('#typeDescription');
-const presetGridEl = document.querySelector('#presetGrid');
+const presetListEl = document.querySelector('#presetList');
 const fieldGridEl = document.querySelector('#fieldGrid');
 const progressFillEl = document.querySelector('#progressFill');
 const progressTextEl = document.querySelector('#progressText');
@@ -834,15 +835,11 @@ const improveButton = document.querySelector('#improveButton');
 const resetButton = document.querySelector('#resetButton');
 const modeButtons = document.querySelectorAll('.mode-button');
 const exportButtons = document.querySelectorAll('.export-button');
-const chipButtons = document.querySelectorAll('.chip');
+const quickButtons = document.querySelectorAll('.quick-item');
 
 function pushLine(target, label, value) {
   if (!value) return;
   target.push(`${label}: ${value}`);
-}
-
-function withArticle(value, fallback) {
-  return value ? value : fallback;
 }
 
 function allFieldsForCurrentType() {
@@ -859,20 +856,21 @@ function renderTabs() {
   Object.entries(typeConfig).forEach(([key, config]) => {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `tab-button ${appState.type === key ? 'active' : ''}`;
+    button.className = `type-tab ${appState.type === key ? 'active' : ''}`;
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-selected', String(appState.type === key));
-    button.dataset.type = key;
     button.textContent = config.label;
+
     button.addEventListener('click', () => {
       appState.type = key;
       render();
     });
+
     tabsEl.appendChild(button);
   });
 }
 
-function renderTypeBox() {
+function renderTypeSummary() {
   const config = typeConfig[appState.type];
   typeTitleEl.textContent = config.label;
   typeDescriptionEl.textContent = config.description;
@@ -881,11 +879,11 @@ function renderTypeBox() {
 
 function renderPresets() {
   const presets = typeConfig[appState.type].presets;
-  presetGridEl.innerHTML = '';
+  presetListEl.innerHTML = '';
 
   presets.forEach((preset) => {
-    const card = document.createElement('article');
-    card.className = 'preset-card';
+    const item = document.createElement('article');
+    item.className = 'preset-item';
 
     const title = document.createElement('h4');
     title.textContent = preset.name;
@@ -897,35 +895,37 @@ function renderPresets() {
     button.type = 'button';
     button.className = 'ghost';
     button.textContent = 'Preset laden';
+
     button.addEventListener('click', () => {
       appState.fields = { ...appState.fields, ...preset.values };
       renderFields();
       refresh();
     });
 
-    card.append(title, text, button);
-    presetGridEl.appendChild(card);
+    item.append(title, text, button);
+    presetListEl.appendChild(item);
   });
 }
 
 function createFieldElement(field) {
   const wrapper = document.createElement('div');
-  wrapper.className = `field-card ${field.required ? 'required' : ''} ${field.full ? 'full' : ''}`;
+  wrapper.className = `field-block ${field.required ? 'required' : ''} ${field.full ? 'full' : ''}`;
 
-  const topline = document.createElement('div');
-  topline.className = 'field-topline';
+  const top = document.createElement('div');
+  top.className = 'field-top';
 
   const label = document.createElement('label');
-  label.textContent = field.label;
   label.setAttribute('for', field.key);
+  label.textContent = field.label;
 
   const badge = document.createElement('span');
-  badge.className = 'required-badge';
+  badge.className = 'required-pill';
   badge.textContent = 'Pflicht';
 
-  topline.append(label, badge);
+  top.append(label, badge);
 
-  const hint = document.createElement('small');
+  const hint = document.createElement('div');
+  hint.className = 'field-hint';
   hint.textContent = field.hint;
 
   let input;
@@ -950,7 +950,7 @@ function createFieldElement(field) {
     refresh();
   });
 
-  wrapper.append(topline, hint, input);
+  wrapper.append(top, hint, input);
 
   if (field.kind === 'textarea') {
     requestAnimationFrame(() => autoResize(input));
@@ -968,7 +968,7 @@ function renderFields() {
 
 function autoResize(textarea) {
   textarea.style.height = 'auto';
-  textarea.style.height = `${Math.max(textarea.scrollHeight, 110)}px`;
+  textarea.style.height = `${Math.max(textarea.scrollHeight, 112)}px`;
 }
 
 function getCurrentData() {
@@ -999,6 +999,7 @@ function buildProductivePrompt(sections) {
   parts.push('ROLLE');
   parts.push(sections.role);
   parts.push('');
+
   parts.push('AUFGABE');
   parts.push(sections.task);
   parts.push('');
@@ -1077,34 +1078,36 @@ function qualityMessage(data) {
   const hints = [];
 
   if (missing.length) {
-    hints.push(`<span class="bad">Fehlende Pflichtfelder:</span> ${missing.map((field) => field.label).join(', ')}`);
+    hints.push(
+      `<span class="bad">Fehlende Pflichtfelder:</span> ${missing.map((field) => field.label).join(', ')}`
+    );
   }
 
   if (!data.context) {
-    hints.push('Tipp: Mit Kontext rät die KI weniger und trifft den Einsatz besser.');
+    hints.push('Tipp: Mit Kontext trifft die Ausgabe den Einsatzzweck deutlich besser.');
   }
 
   if (!data.constraints) {
-    hints.push('Tipp: Einschränkungen machen das Ergebnis meist deutlich präziser.');
+    hints.push('Tipp: Einschränkungen machen das Ergebnis fast immer schärfer.');
   }
 
   if (!data.style) {
-    hints.push('Tipp: Stil oder Ton fehlt noch. Gerade bei Text, Analyse und Lernen ist das wichtig.');
+    hints.push('Tipp: Stil oder Ton fehlt noch.');
   }
 
   if (!data.mustInclude) {
-    hints.push('Tipp: Unter "Muss rein" landen oft die wichtigsten Anforderungen.');
+    hints.push('Tipp: "Muss rein" ist oft das Feld mit dem größten Nutzen.');
   }
 
   if (completion >= 85 && missing.length === 0) {
-    return '<strong class="ok">Qualität:</strong> Stark. Der Prompt ist klar, vollständig und produktionsnah.';
+    return '<strong class="ok">Qualität:</strong> Stark. Der Prompt ist klar, vollständig und direkt brauchbar.';
   }
 
   if (completion >= 60) {
     return `<strong class="warn">Qualität:</strong> Solide Basis, aber noch nicht scharf genug.<br>${hints.join('<br>')}`;
   }
 
-  return `<strong class="bad">Qualität:</strong> Noch zu offen. So bekommt man schnell generische Antworten.<br>${hints.join('<br>')}`;
+  return `<strong class="bad">Qualität:</strong> Noch zu offen. So kommt schnell generischer Output raus.<br>${hints.join('<br>')}`;
 }
 
 function updateStats(prompt, data) {
@@ -1125,10 +1128,10 @@ function updateStats(prompt, data) {
 
   outputHintEl.textContent =
     appState.mode === 'productive'
-      ? 'Produktiv ist die schärfste Version für echte Nutzung.'
+      ? 'Produktiv ist die schärfste Version für direkte Nutzung.'
       : appState.mode === 'compact'
-      ? 'Kompakt bündelt alles in einem direkten Prompt.'
-      : 'Strukturiert ist gut lesbar und leicht weiterzubearbeiten.';
+      ? 'Kompakt packt alles in einen direkteren Ein-Zeilen-Stil.'
+      : 'Strukturiert ist gut lesbar und leichter weiterzubearbeiten.';
 }
 
 function refresh() {
@@ -1147,23 +1150,51 @@ function renderModeButtons() {
   });
 }
 
-function render() {
-  renderTabs();
-  renderTypeBox();
-  renderPresets();
-  renderFields();
-  renderModeButtons();
-  refresh();
+function renderQuickAdds() {
+  const selectedSet = new Set(appState.selectedQuickAdds);
+
+  quickButtons.forEach((button) => {
+    const id = button.dataset.chipId;
+    const isSelected = selectedSet.has(id);
+
+    button.classList.toggle('selected', isSelected);
+    button.disabled = isSelected;
+    button.setAttribute('aria-pressed', String(isSelected));
+  });
 }
 
 function mergeFieldValue(fieldName, value) {
   const current = String(appState.fields[fieldName] || '').trim();
+
   if (!current) {
     appState.fields[fieldName] = value;
-  } else if (!current.toLowerCase().includes(value.toLowerCase())) {
+    return;
+  }
+
+  if (!current.toLowerCase().includes(value.toLowerCase())) {
     appState.fields[fieldName] = `${current}, ${value}`;
   }
+}
+
+function handleQuickAdd(button) {
+  const chipId = button.dataset.chipId;
+  if (appState.selectedQuickAdds.includes(chipId)) return;
+
+  mergeFieldValue(button.dataset.target, button.dataset.value);
+  appState.selectedQuickAdds.push(chipId);
+
   renderFields();
+  renderQuickAdds();
+  refresh();
+}
+
+function render() {
+  renderTabs();
+  renderTypeSummary();
+  renderPresets();
+  renderFields();
+  renderModeButtons();
+  renderQuickAdds();
   refresh();
 }
 
@@ -1278,6 +1309,7 @@ function exportPrompt(format) {
       typeLabel: typeConfig[appState.type].label,
       mode: appState.mode,
       fields: data,
+      selectedQuickAdds: appState.selectedQuickAdds,
       prompt
     };
     downloadFile(JSON.stringify(payload, null, 2), `${baseName}.json`, 'application/json;charset=utf-8');
@@ -1294,17 +1326,20 @@ function restoreState() {
 
   try {
     const parsed = JSON.parse(raw);
+
     if (parsed && typeof parsed === 'object') {
       appState.type = parsed.type && typeConfig[parsed.type] ? parsed.type : 'text';
       appState.mode = ['productive', 'compact', 'structured'].includes(parsed.mode)
         ? parsed.mode
         : 'productive';
       appState.fields = parsed.fields && typeof parsed.fields === 'object' ? parsed.fields : {};
+      appState.selectedQuickAdds = Array.isArray(parsed.selectedQuickAdds) ? parsed.selectedQuickAdds : [];
     }
   } catch {
     appState.type = 'text';
     appState.mode = 'productive';
     appState.fields = {};
+    appState.selectedQuickAdds = [];
   }
 }
 
@@ -1312,6 +1347,7 @@ function resetAll() {
   appState.type = 'text';
   appState.mode = 'productive';
   appState.fields = {};
+  appState.selectedQuickAdds = [];
   localStorage.removeItem(STORAGE_KEY);
   render();
 }
@@ -1325,10 +1361,8 @@ function bindEvents() {
     });
   });
 
-  chipButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      mergeFieldValue(button.dataset.target, button.dataset.value);
-    });
+  quickButtons.forEach((button) => {
+    button.addEventListener('click', () => handleQuickAdd(button));
   });
 
   copyButton.addEventListener('click', copyPrompt);
