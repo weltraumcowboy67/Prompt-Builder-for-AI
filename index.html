@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PromptWerk – KI Prompt Builder</title>
+    <title>PromptWerk V3 - KI Prompt Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,64 +15,143 @@
   <body>
     <div class="app-shell">
       <header class="hero">
-        <p class="eyebrow">PromptWerk</p>
-        <h1>Bessere KI-Prompts mit klarer Struktur</h1>
-        <p>
-          Wähle einen Prompt-Typ, fülle die wichtigsten Felder aus und erhalte sofort einen
-          sauberen Prompt mit klaren Anforderungen.
-        </p>
+        <div class="hero-copy">
+          <p class="eyebrow">PromptWerk V3</p>
+          <h1>Prompts bauen wie ein richtiges Produkt</h1>
+          <p class="hero-text">
+            Tabs statt Dropdown-Wüste, Presets pro Anwendungsfall, sauberer Export und eine
+            deutlich bessere Prompt-Ausgabe für Text, Bild, Code, Lernen, Analyse und Ideen.
+          </p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span>Aktiver Typ</span>
+            <strong id="activeTypeLabel">Text schreiben</strong>
+          </div>
+          <div class="stat-card">
+            <span>Vollständigkeit</span>
+            <strong id="completionLabel">0%</strong>
+          </div>
+          <div class="stat-card">
+            <span>Fehlende Pflichtfelder</span>
+            <strong id="missingLabel">0</strong>
+          </div>
+        </div>
       </header>
 
-      <main class="layout">
-        <section class="panel form-panel" aria-label="Prompt-Konfiguration">
-          <div class="step-head">
-            <span>Schritt 1</span>
-            <h2>Prompt-Typ wählen</h2>
+      <main class="workspace">
+        <section class="panel builder-panel" aria-label="Prompt Builder">
+          <div class="panel-head">
+            <div>
+              <span class="panel-kicker">Builder</span>
+              <h2>Prompt konfigurieren</h2>
+            </div>
           </div>
 
-          <label for="promptType">Typ</label>
-          <select id="promptType" name="promptType"></select>
+          <div id="typeTabs" class="tabs" role="tablist" aria-label="Prompt-Typen"></div>
 
-          <div class="step-head compact">
-            <span>Schritt 2</span>
-            <h2>Details ausfüllen</h2>
+          <div class="type-box">
+            <h3 id="typeTitle">Text schreiben</h3>
+            <p id="typeDescription"></p>
+          </div>
+
+          <div class="preset-section">
+            <div class="section-head">
+              <div>
+                <span class="mini-kicker">Presets</span>
+                <h3>Schnellstart</h3>
+              </div>
+            </div>
+            <div id="presetGrid" class="preset-grid"></div>
+          </div>
+
+          <div class="progress-box">
+            <div class="progress-row">
+              <span>Prompt-Qualität</span>
+              <strong id="progressText">0%</strong>
+            </div>
+            <div class="progress-track">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="chips-box">
+            <span class="mini-kicker">Schnell ergänzen</span>
+            <div class="chips">
+              <button type="button" class="chip" data-target="style" data-value="Klar, direkt und sauber strukturiert">
+                Klarer Stil
+              </button>
+              <button type="button" class="chip" data-target="format" data-value="Markdown mit klaren Überschriften">
+                Markdown
+              </button>
+              <button type="button" class="chip" data-target="length" data-value="Kurz, präzise und vollständig">
+                Kurz
+              </button>
+              <button type="button" class="chip" data-target="constraints" data-value="Keine Floskeln">
+                Keine Floskeln
+              </button>
+              <button type="button" class="chip" data-target="mustInclude" data-value="Praxisnahe Beispiele oder direkt nutzbare Inhalte">
+                Praxisnah
+              </button>
+            </div>
           </div>
 
           <form id="builderForm" novalidate>
-            <div id="formFields" class="fields"></div>
+            <div id="fieldGrid" class="field-grid"></div>
 
-            <div class="actions">
-              <button type="button" id="loadExample" class="ghost">Beispiel laden</button>
-              <button type="button" id="resetForm" class="ghost">Zurücksetzen</button>
-              <button type="button" id="improvePrompt">Prompt verbessern</button>
+            <div class="form-actions">
+              <button type="button" id="improveButton">Prompt verbessern</button>
+              <button type="button" id="resetButton" class="ghost">Zurücksetzen</button>
             </div>
           </form>
 
-          <div class="quality" id="qualityFeedback" aria-live="polite"></div>
+          <div id="qualityBox" class="quality-box" aria-live="polite"></div>
         </section>
 
-        <section class="panel preview-panel" aria-label="Prompt-Vorschau">
-          <div class="preview-head">
+        <section class="panel output-panel" aria-label="Prompt Ausgabe">
+          <div class="panel-head output-head">
             <div>
-              <span>Schritt 3</span>
-              <h2>Live-Vorschau</h2>
+              <span class="panel-kicker">Output</span>
+              <h2>Fertiger Prompt</h2>
             </div>
-            <button type="button" id="copyPrompt">Prompt kopieren</button>
+
+            <div class="mode-switch" id="modeSwitch" role="tablist" aria-label="Ausgabe-Modi">
+              <button type="button" class="mode-button active" data-mode="productive">Produktiv</button>
+              <button type="button" class="mode-button" data-mode="compact">Kompakt</button>
+              <button type="button" class="mode-button" data-mode="structured">Strukturiert</button>
+            </div>
           </div>
 
-          <textarea id="promptPreview" readonly></textarea>
+          <div class="output-stats">
+            <div class="output-stat">
+              <span>Wörter</span>
+              <strong id="wordCount">0</strong>
+            </div>
+            <div class="output-stat">
+              <span>Zeichen</span>
+              <strong id="charCount">0</strong>
+            </div>
+            <div class="output-stat">
+              <span>Zeilen</span>
+              <strong id="lineCount">0</strong>
+            </div>
+          </div>
+
+          <textarea id="promptOutput" readonly spellcheck="false"></textarea>
+
+          <div class="output-actions">
+            <button type="button" id="copyButton">Kopieren</button>
+            <button type="button" class="ghost export-button" data-export="txt">Export TXT</button>
+            <button type="button" class="ghost export-button" data-export="md">Export MD</button>
+            <button type="button" class="ghost export-button" data-export="json">Export JSON</button>
+          </div>
+
+          <div id="outputHint" class="output-hint"></div>
         </section>
       </main>
     </div>
-
-    <template id="fieldTemplate">
-      <label>
-        <span class="field-label"></span>
-        <textarea rows="3"></textarea>
-        <small class="hint"></small>
-      </label>
-    </template>
-
-    <script src="script.js"></script>
   </body>
+
+  <script src="script.js"></script>
 </html>
