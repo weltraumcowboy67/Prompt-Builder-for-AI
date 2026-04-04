@@ -811,7 +811,8 @@ const appState = {
   type: 'text',
   mode: 'productive',
   fields: {},
-  selectedQuickAdds: []
+  selectedQuickAdds: [],
+  theme: 'light'
 };
 
 const tabsEl = document.querySelector('#typeTabs');
@@ -836,6 +837,7 @@ const resetButton = document.querySelector('#resetButton');
 const modeButtons = document.querySelectorAll('.mode-button');
 const exportButtons = document.querySelectorAll('.export-button');
 const quickButtons = document.querySelectorAll('.quick-item');
+const themeToggleButton = document.querySelector('#themeToggle');
 
 function pushLine(target, label, value) {
   if (!value) return;
@@ -1163,6 +1165,13 @@ function renderQuickAdds() {
   });
 }
 
+function applyTheme() {
+  const isNight = appState.theme === 'night';
+  document.body.classList.toggle('dev-night', isNight);
+  themeToggleButton.textContent = isNight ? 'Nachtmodus: An' : 'Nachtmodus: Aus';
+}
+
+
 function mergeFieldValue(fieldName, value) {
   const current = String(appState.fields[fieldName] || '').trim();
 
@@ -1198,6 +1207,7 @@ function removeMergedFieldValue(fieldName, value) {
   appState.fields[fieldName] = filtered.join(', ');
 }
 
+
 function handleQuickAdd(button) {
   const chipId = button.dataset.chipId;
   const isSelected = appState.selectedQuickAdds.includes(chipId);
@@ -1222,6 +1232,7 @@ function render() {
   renderFields();
   renderModeButtons();
   renderQuickAdds();
+  applyTheme();
   refresh();
 }
 
@@ -1361,12 +1372,14 @@ function restoreState() {
         : 'productive';
       appState.fields = parsed.fields && typeof parsed.fields === 'object' ? parsed.fields : {};
       appState.selectedQuickAdds = Array.isArray(parsed.selectedQuickAdds) ? parsed.selectedQuickAdds : [];
+      appState.theme = parsed.theme === 'night' ? 'night' : 'light';
     }
   } catch {
     appState.type = 'text';
     appState.mode = 'productive';
     appState.fields = {};
     appState.selectedQuickAdds = [];
+    appState.theme = 'light';
   }
 }
 
@@ -1375,6 +1388,7 @@ function resetAll() {
   appState.mode = 'productive';
   appState.fields = {};
   appState.selectedQuickAdds = [];
+  appState.theme = 'light';
   localStorage.removeItem(STORAGE_KEY);
   render();
 }
@@ -1398,6 +1412,12 @@ function bindEvents() {
 
   exportButtons.forEach((button) => {
     button.addEventListener('click', () => exportPrompt(button.dataset.export));
+  });
+
+  themeToggleButton.addEventListener('click', () => {
+    appState.theme = appState.theme === 'night' ? 'light' : 'night';
+    applyTheme();
+    persistState();
   });
 }
 
