@@ -1158,7 +1158,7 @@ function renderQuickAdds() {
     const isSelected = selectedSet.has(id);
 
     button.classList.toggle('selected', isSelected);
-    button.disabled = isSelected;
+    button.disabled = false;
     button.setAttribute('aria-pressed', String(isSelected));
   });
 }
@@ -1176,12 +1176,39 @@ function mergeFieldValue(fieldName, value) {
   }
 }
 
+function removeMergedFieldValue(fieldName, value) {
+  const current = String(appState.fields[fieldName] || '').trim();
+  if (!current) return;
+
+  const target = value.toLowerCase();
+  const parts = current
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  const filtered = parts.filter((entry) => entry.toLowerCase() !== target);
+
+  if (filtered.length === parts.length) {
+    if (current.toLowerCase() === target) {
+      appState.fields[fieldName] = '';
+    }
+    return;
+  }
+
+  appState.fields[fieldName] = filtered.join(', ');
+}
+
 function handleQuickAdd(button) {
   const chipId = button.dataset.chipId;
-  if (appState.selectedQuickAdds.includes(chipId)) return;
+  const isSelected = appState.selectedQuickAdds.includes(chipId);
 
-  mergeFieldValue(button.dataset.target, button.dataset.value);
-  appState.selectedQuickAdds.push(chipId);
+  if (isSelected) {
+    appState.selectedQuickAdds = appState.selectedQuickAdds.filter((id) => id !== chipId);
+    removeMergedFieldValue(button.dataset.target, button.dataset.value);
+  } else {
+    mergeFieldValue(button.dataset.target, button.dataset.value);
+    appState.selectedQuickAdds.push(chipId);
+  }
 
   renderFields();
   renderQuickAdds();

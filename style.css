@@ -134,6 +134,7 @@ button {
   grid-template-columns: 1.06fr 0.94fr;
   gap: 28px;
   margin-top: 24px;
+  align-items: start;
 }
 
 .surface {
@@ -462,6 +463,12 @@ button.ghost:hover {
   margin-bottom: 16px;
 }
 
+.output-surface {
+  position: sticky;
+  top: 16px;
+  align-self: start;
+}
+
 .mode-switch {
   display: flex;
   flex-wrap: wrap;
@@ -526,6 +533,10 @@ button.ghost:hover {
 @media (max-width: 1160px) {
   .workspace {
     grid-template-columns: 1fr;
+  }
+
+    .output-surface {
+    position: static;
   }
 
   #promptOutput {
