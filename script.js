@@ -1169,6 +1169,7 @@ function applyTheme() {
   const isNight = appState.theme === 'night';
   document.body.classList.toggle('dev-night', isNight);
   themeToggleButton.textContent = isNight ? 'Nachtmodus: An' : 'Nachtmodus: Aus';
+  themeToggleButton.setAttribute('aria-pressed', String(isNight));
 }
 
 

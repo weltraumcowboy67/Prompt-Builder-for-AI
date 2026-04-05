@@ -1,16 +1,26 @@
 :root {
   color-scheme: light;
-  --bg: #f6f2ea;
-  --bg-soft: #fbf8f2;
-  --surface: #fffdf9;
-  --surface-muted: #f4efe6;
-  --line: #ddd5c8;
-  --line-strong: #c9bfaf;
+  --bg: #f3ede3;
+  --bg-soft: #fbf6ee;
+  --surface: #fffdf8;
+  --surface-muted: #f1e7d7;
+  --field-bg: #fffcf5;
+  --field-focus-bg: #ffffff;
+  --line: #d9cfbf;
+  --line-strong: #bfae92;
   --text: #1f252c;
   --text-soft: #5d6470;
-  --accent: #4f5f69;
-  --accent-soft: #eef1f2;
-  --accent-strong: #2f3d46;
+  --accent: #705840;
+  --accent-soft: #f0e2ca;
+  --accent-strong: #4f3c27;
+  --hero-overlay: linear-gradient(180deg, rgba(255, 251, 243, 0.82), rgba(255, 251, 243, 0.08));
+  --progress-track: #e8ddcb;
+  --quick-hover: #f6efe3;
+  --quick-selected-border: #8f775b;
+  --quick-circle-inset: #fffaf1;
+  --scrollbar-track: #efe7da;
+  --scrollbar-thumb: #b59a7a;
+  --scrollbar-thumb-hover: #8f775b;
   --ok: #2f6b52;
   --warn: #8a6b21;
   --bad: #8a3b3b;
@@ -21,17 +31,28 @@
 }
 
 body.dev-night {
+  color-scheme: dark;
   --bg: #14181d;
   --bg-soft: #1a2028;
   --surface: #1d242d;
   --surface-muted: #27303a;
+  --field-bg: #182028;
+  --field-focus-bg: #202a33;
   --line: #313b48;
   --line-strong: #44505f;
   --text: #e9eef7;
   --text-soft: #a8b3c5;
-  --accent: #6f879a;
-  --accent-soft: #2a3441;
-  --accent-strong: #88a8c2;
+  --accent: #d0a56d;
+  --accent-soft: #342a1f;
+  --accent-strong: #f0c88f;
+  --hero-overlay: linear-gradient(180deg, rgba(10, 12, 15, 0.2), rgba(10, 12, 15, 0.05));
+  --progress-track: #222a32;
+  --quick-hover: #202933;
+  --quick-selected-border: #c7a06c;
+  --quick-circle-inset: #11161c;
+  --scrollbar-track: #171d24;
+  --scrollbar-thumb: #5f6874;
+  --scrollbar-thumb-hover: #c7a06c;
   --ok: #60bf8f;
   --warn: #e0bc69;
   --bad: #ef8e8e;
@@ -44,15 +65,20 @@ body.dev-night {
 
 html {
   scroll-behavior: smooth;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+html,
+body,
+textarea {
+  scrollbar-width: thin;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0)),
-    var(--bg);
+  background: var(--hero-overlay), var(--bg);
   color: var(--text);
 }
 
@@ -85,16 +111,43 @@ button {
 }
 
 .brand-mark {
-  width: 46px;
-  height: 46px;
+  width: clamp(176px, 20vw, 248px);
+  min-height: auto;
   display: grid;
   place-items: center;
-  border: 1px solid var(--line-strong);
-  background: var(--surface);
-  color: var(--accent-strong);
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: 0.06em;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+body.dev-night .brand-mark {
+  background: transparent;
+}
+
+.brand-logo {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 24px rgba(21, 17, 12, 0.12));
+}
+
+.brand-logo--night {
+  display: none;
+}
+
+body.dev-night .brand-logo--day {
+  display: none;
+}
+
+body.dev-night .brand-logo--night {
+  display: block;
+}
+
+body.dev-night .brand-logo {
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.32));
 }
 
 .eyebrow,
@@ -196,6 +249,8 @@ button {
   color: var(--text-soft);
   padding: 0 0 8px;
   font-weight: 600;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .type-tab:hover {
@@ -284,7 +339,7 @@ button {
 .progress-line {
   width: 100%;
   height: 7px;
-  background: #ebe4d9;
+  background: var(--progress-track);
   overflow: hidden;
 }
 
@@ -314,7 +369,7 @@ button {
 
 .quick-item:hover:not(:disabled) {
   border-color: var(--line-strong);
-  background: #f8f4ed;
+  background: var(--quick-hover);
 }
 
 .quick-item:disabled {
@@ -323,7 +378,7 @@ button {
 }
 
 .quick-item.selected {
-  border-color: #bac5ca;
+  border-color: var(--quick-selected-border);
   background: var(--accent-soft);
 }
 
@@ -340,7 +395,7 @@ button {
 .quick-item.selected .quick-circle {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
-  box-shadow: inset 0 0 0 3px #eef2f4;
+  box-shadow: inset 0 0 0 3px var(--quick-circle-inset);
 }
 
 .subtle-note {
@@ -398,7 +453,7 @@ button {
 .field-block textarea {
   width: 100%;
   border: 1px solid var(--line-strong);
-  background: #fffdfa;
+  background: var(--field-bg);
   color: var(--text);
   padding: 12px 13px;
   border-radius: 0;
@@ -420,7 +475,7 @@ button {
 #promptOutput:focus {
   outline: none;
   border-color: var(--accent-strong);
-  background: #ffffff;
+  background: var(--field-focus-bg);
 }
 
 .action-row {
@@ -439,9 +494,60 @@ button {
   transition: 0.18s ease;
 }
 
+.type-tab,
+.mode-button,
+.quick-item {
+  box-shadow: none;
+}
+
+.type-tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-soft);
+  padding: 0 0 8px;
+}
+
+.mode-button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-soft);
+  padding: 0 0 6px;
+}
+
+.quick-item {
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--text);
+  padding: 12px 14px;
+}
+
 button:hover {
   background: var(--accent);
   border-color: var(--accent);
+}
+
+.type-tab:hover,
+.type-tab.active,
+.mode-button:hover,
+.mode-button.active {
+  background: transparent;
+}
+
+.type-tab:hover,
+.mode-button:hover {
+  border-color: transparent;
+}
+
+.type-tab.active,
+.mode-button.active {
+  border-bottom-color: var(--accent-strong);
+}
+
+.quick-item:hover:not(:disabled),
+.quick-item.selected {
+  color: var(--text);
 }
 
 button.ghost {
@@ -515,6 +621,7 @@ button.ghost:hover {
   color: var(--text-soft);
   padding: 0 0 6px;
   font-weight: 600;
+  border-radius: 0;
 }
 
 .mode-button:hover {
@@ -543,7 +650,7 @@ button.ghost:hover {
   width: 100%;
   min-height: 280px;
   border: 1px solid var(--line-strong);
-  background: #fffdfa;
+  background: var(--field-bg);
   color: var(--text);
   padding: 16px;
   border-radius: 0;
@@ -551,6 +658,25 @@ button.ghost:hover {
   resize: none;
   flex: 1 1 auto;
   overflow: auto;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
 }
 
 .output-actions {
